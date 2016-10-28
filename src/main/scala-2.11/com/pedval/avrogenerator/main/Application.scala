@@ -3,12 +3,12 @@ package com.pedval.avrogenerator.main
 import java.util.Properties
 
 import com.pedval.avrogenerator.sink.KafkaSink
-import org.apache.commons.codec.StringDecoder
+import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-
 import com.pedval.avrogenerator.avro.AvroGenerator
+import com.pedval.avrogenerator.generatedclasses.Player
 
 /**
   * Created by PJimen01 on 27/10/2016.
@@ -17,7 +17,7 @@ object Application {
 
   def main(args: Array[String]) {
 
-    if(args.length != 3) {
+    if(args.length != 4) {
       println("----------------------")
       println("- ERROR              -")
       println("- Usage:             -")
@@ -30,16 +30,16 @@ object Application {
 
     val ssc = new StreamingContext(conf, Seconds(args(1).toInt))
 
-    val inputTopics = args(3).split(",").toSet
+    val inputTopics = args(2).split(",").toSet
 
-    val kafkaParams = Map[String, String]("metadata.broker.list"   -> "localhost:9092")
+    val kafkaParams = Map[String, String]("metadata.broker.list" -> "localhost:9092")
 
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, inputTopics)
 
     val kafkaSink = ssc.sparkContext.broadcast(KafkaSink[Player](createProperties()))
 
     messages.foreachRDD(rdd => {
-      rdd.map(AvroGenerator.createPlayerAvro).foreach(avro => kafkaSink.value.send(args(4), avro))
+      rdd.map(AvroGenerator.createPlayerAvro).foreach(avro => kafkaSink.value.send(args(3), avro))
     })
 
     ssc.start()
@@ -53,8 +53,9 @@ object Application {
     props.put("bootstrap.servers", "localhost:9092")
     props.put("serializer.class", "kafka.serializer.StringEncoder")
     props.put("producer.type", "async")
-    props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-    props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
+    props.put("key.serializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
+    props.put("value.serializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
+    props.put("schema.registry.url", "http://localhost:8081");
 
     props
   }

@@ -5,6 +5,9 @@ version := "1.0"
 
 scalaVersion := "2.11.8"
 
+//Adding repository
+resolvers += "confluent" at "http://packages.confluent.io/maven/"
+
 
 //Dependencies injection
 libraryDependencies += "org.apache.spark" % "spark-streaming_2.11" % "2.0.0" % "provided"
@@ -12,6 +15,7 @@ libraryDependencies += "org.apache.spark" % "spark-core_2.11" % "2.0.0" % "provi
 libraryDependencies += "org.apache.avro" % "avro" % "1.7.7" % "provided"
 
 libraryDependencies += "org.apache.spark" % "spark-streaming-kafka-0-8_2.11" % "2.0.0"
+libraryDependencies += "io.confluent" % "kafka-avro-serializer" % "1.0"
 
 //Jar name
 assemblyJarName in assembly := "avro-generator-1.0.jar"
