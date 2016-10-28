@@ -39,7 +39,7 @@ object Application {
     val kafkaSink = ssc.sparkContext.broadcast(KafkaSink(createProperties()))
 
     messages.foreachRDD(rdd => {
-      rdd.map(AvroGenerator.createAvro).foreach(avro => kafkaSink.value.send("test", avro))
+      rdd.map(AvroGenerator.createAvro).foreach(avro => kafkaSink.value.send(args(4), avro))
     })
 
     ssc.start()

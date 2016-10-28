@@ -1,0 +1,31 @@
+{"namespace": "com.pedval.avrogenerator.generatedclasses",
+ "type": "record",
+ "name": "Player",
+ "fields": [
+     {"name": "playerID", "type": "string"},
+     {"name": "birthYear", "type": "int"},
+     {"name": "birthMonth", "type": "int"},
+     {"name": "birthDay", "type": "int"},
+     {"name": "birthCountry", "type": "string"},
+     {"name": "birthState", "type": "string"},
+     {"name": "birthCity", "type": "string"},
+     {"name": "deathYear", "type": "int"},
+     {"name": "deathMonth", "type": "int"},
+     {"name": "deathDay", "type": "int"},
+     {"name": "deathCountry", "type": "string"},
+     {"name": "deathState", "type": "string"},
+     {"name": "deathCity", "type": "string"},
+     {"name": "nameFirst", "type": "string"},
+     {"name": "nameLast", "type": "string"},
+     {"name": "nameGiven", "type": "string"},
+     {"name": "weight", "type": "int"},
+     {"name": "height", "type": "int"},
+     {"name": "bats", "type": "string"},
+     {"name": "throws", "type": "string"},
+     {"name": "debut", "type": "string"},
+     {"name": "finalGame", "type": "string"},
+     {"name": "retroID", "type": "string"},
+     {"name": "bbrefID", "type": "string"}
+
+ ]
+}
