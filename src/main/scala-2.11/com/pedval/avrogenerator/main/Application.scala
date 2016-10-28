@@ -36,10 +36,10 @@ object Application {
 
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, inputTopics)
 
-    val kafkaSink = ssc.sparkContext.broadcast(KafkaSink(createProperties()))
+    val kafkaSink = ssc.sparkContext.broadcast(KafkaSink[Player](createProperties()))
 
     messages.foreachRDD(rdd => {
-      rdd.map(AvroGenerator.createAvro).foreach(avro => kafkaSink.value.send(args(4), avro))
+      rdd.map(AvroGenerator.createPlayerAvro).foreach(avro => kafkaSink.value.send(args(4), avro))
     })
 
     ssc.start()
