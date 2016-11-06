@@ -5,9 +5,15 @@ import com.pedval.avrogenerator.generatedclasses.Player
 /**
   * Created by PJimen01 on 27/10/2016.
   */
-object AvroGenerator {
+trait AvroGenerator {
 
-  def createPlayerAvro(line : (String,String)) : Player = {
+  def generate(line : (String, String))
+
+}
+
+object PlayerAvro extends AvroGenerator{
+
+  def generate(line : (String,String)) : Player = {
     val fields = line._2.split(",")
     val player : Player=  Player(fields(0),
       if(fields(1).equals("")) 0 else fields(1).toInt,

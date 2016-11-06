@@ -7,7 +7,7 @@ import kafka.serializer.StringDecoder
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-import com.pedval.avrogenerator.avro.AvroGenerator
+import com.pedval.avrogenerator.avro.{AvroGenerator, PlayerAvro}
 import com.pedval.avrogenerator.generatedclasses.Player
 import com.pedval.avrogenerator.serializer.DatumSerializer
 
@@ -41,7 +41,7 @@ object Application {
 
     messages.foreachRDD(rdd => {
       rdd
-        .map(AvroGenerator.createPlayerAvro)
+        .map(PlayerAvro.generate)
         .map(player => new DatumSerializer[Player]
           .serialize(Player.SCHEMA$,player))
         .foreach(avro => kafkaSink.value.send(args(3), avro))
