@@ -9,6 +9,7 @@ import org.apache.spark.streaming.kafka.KafkaUtils
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import com.pedval.avrogenerator.avro.AvroGenerator
 import com.pedval.avrogenerator.generatedclasses.Player
+import com.pedval.avrogenerator.serializer.DatumSerializer
 
 /**
   * Created by PJimen01 on 27/10/2016.
@@ -36,10 +37,15 @@ object Application {
 
     val messages = KafkaUtils.createDirectStream[String, String, StringDecoder, StringDecoder](ssc, kafkaParams, inputTopics)
 
-    val kafkaSink = ssc.sparkContext.broadcast(KafkaSink[Player](createProperties()))
+    val kafkaSink = ssc.sparkContext.broadcast(KafkaSink[Array[Byte]](createProperties()))
 
     messages.foreachRDD(rdd => {
-      rdd.map(AvroGenerator.createPlayerAvro).foreach(avro => kafkaSink.value.send(args(3), avro))
+      rdd
+        .map(AvroGenerator.createPlayerAvro)
+        .map(player => new DatumSerializer[Player]
+          .serialize(Player.SCHEMA$,player))
+        .foreach(avro => kafkaSink.value.send(args(3), avro))
+
     })
 
     ssc.start()
@@ -53,9 +59,8 @@ object Application {
     props.put("bootstrap.servers", "localhost:9092")
     props.put("serializer.class", "kafka.serializer.StringEncoder")
     props.put("producer.type", "async")
-    props.put("key.serializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
-    props.put("value.serializer", "io.confluent.kafka.serializers.KafkaAvroSerializer");
-    props.put("schema.registry.url", "http://localhost:8081");
+    props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer")
+    props.put("value.serializer","org.apache.kafka.common.serialization.ByteArraySerializer")
 
     props
   }
